@@ -1,3 +1,51 @@
+# Komelia Requests
+
+A fork of [Komelia](https://github.com/Snd-R/Komelia) (Komga media client) with a **Requests** tab: discover
+manga and light novels, request them, and follow their availability in your Komga library — without leaving
+the reader app.
+
+It works together with **[Taberna Requests](https://github.com/CosoJs/taberna-requests)**, a small self-hosted
+request server for Komga. This app is the mobile/desktop front end; the server does the AniList search, approval,
+indexer search (Prowlarr) and downloads (qBittorrent).
+
+<img src="screenshots/fork/requests-tab.jpg" alt="Requests tab" width="270">
+
+### What this fork adds
+
+- **Requests tab** — bottom bar on mobile, side menu on desktop:
+  - **Discover:** search AniList (manga / light novels) and request a title.
+  - **Requests:** every request with its state and Komga availability (*Available*, *Partial 8/12*).
+  - **For admins:** approve or deny, pick a release from your indexers, follow ongoing series.
+- **No extra login:** it signs in to the request server with the Komga session Komelia already keeps, so no
+  password is stored or sent.
+- **Installs next to upstream Komelia** (own application id) and has self-updates disabled, so it never gets
+  replaced by the upstream app.
+
+### Requirements
+
+- A [Taberna Requests](https://github.com/CosoJs/taberna-requests) server on the **same host as Komga**, served
+  at `/pedidos/` (for example `https://example.com/komga` → `https://example.com/pedidos`).
+- Sign in to Komga with *remember me* (Komelia's default).
+
+### Downloads
+
+Debug APKs (arm64) are built by GitHub Actions: open the latest successful
+[Android APK](../../actions/workflows/android.yml) run and download the `komelia-requests-debug-apk` artifact.
+
+### Changes compared to upstream
+
+All new code lives in `komelia-ui/src/commonMain/kotlin/snd/komelia/ui/requests/`. Upstream files touched
+(each change is marked with `// fork:`): `MainScreen.kt`, `topbar/NavigationMenuContent.kt`,
+`ViewModelFactory.kt`, `komelia-app/androidApp/build.gradle.kts`, the Android `app_name`, plus the CI workflow in
+`.github/workflows/`. The Requests tab UI is currently in Spanish.
+
+Komelia is licensed under the Apache License 2.0 and so is this fork; all credit for the app goes to
+[Snd-R](https://github.com/Snd-R) and the Komelia contributors.
+
+---
+
+*Original Komelia README below.*
+
 # Komelia - Komga media client
 
 ### Downloads:
