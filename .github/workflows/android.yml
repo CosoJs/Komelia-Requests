@@ -49,11 +49,15 @@ jobs:
         with:
           node-version: 24
 
-      - name: Plataforma de Android que pide el proyecto
+      # Gradle descarga solo lo que falte del SDK si las licencias están aceptadas.
+      # Esto no corta la compilación: solo acepta licencias y muestra qué hay, por si hay que diagnosticar.
+      - name: Licencias del SDK de Android
         run: |
-          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
-          yes | "$SDKMANAGER" --licenses > /dev/null
-          "$SDKMANAGER" "platforms;android-37"
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          SDKMANAGER=$(ls "$ANDROID_HOME"/cmdline-tools/*/bin/sdkmanager | head -1)
+          echo "sdkmanager: $SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses > /dev/null || true
+          "$SDKMANAGER" --list 2>/dev/null | grep -E "platforms;android-3[6-9]" | head -20 || true
 
       - uses: gradle/actions/setup-gradle@v4
 
