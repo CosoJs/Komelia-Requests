@@ -69,17 +69,15 @@ android {
         buildConfig = true
     }
     defaultConfig {
-        applicationId = "io.github.snd_r.komelia"
+        // fork: id propio para instalarse al lado de Komelia original
+        applicationId = "io.github.cosojs.komelia.requests"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = libs.versions.android.versionCode.get().toInt()
         versionName = libs.versions.app.version.get()
 
-        val enableSelfUpdates = when (androidVariant) {
-            AndroidVariant.STANDALONE -> "true"
-            AndroidVariant.FDROID -> "false"
-            AndroidVariant.PLAY -> "false"
-        }
+        // fork: las auto-actualizaciones bajarían el Komelia original y se perdería la pestaña de pedidos
+        val enableSelfUpdates = "false"
         buildConfigField("boolean", "ENABLE_SELF_UPDATES", enableSelfUpdates)
     }
     packaging {
