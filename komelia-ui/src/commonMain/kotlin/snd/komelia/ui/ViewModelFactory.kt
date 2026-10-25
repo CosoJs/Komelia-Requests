@@ -445,6 +445,16 @@ class ViewModelFactory(
         )
     }
 
+    // fork: pestaña de pedidos. Un solo cliente para que la sesión se reuse entre pantallas.
+    private val requestsClient by lazy {
+        snd.komelia.ui.requests.RequestsClient(
+            dependencies.appRepositories.settingsRepository,
+            dependencies.appRepositories.secretsRepository,
+        )
+    }
+
+    fun getRequestsViewModel() = snd.komelia.ui.requests.RequestsViewModel(requestsClient)
+
     fun getAnnouncementsViewModel(): AnnouncementsViewModel {
         return AnnouncementsViewModel(dependencies.appNotifications, komgaApi.announcementsApi)
     }

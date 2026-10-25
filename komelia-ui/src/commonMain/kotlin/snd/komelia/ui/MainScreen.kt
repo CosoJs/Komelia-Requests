@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalLibrary
 import androidx.compose.material.icons.filled.Search
@@ -65,6 +66,7 @@ import snd.komelia.ui.platform.PlatformType.WEB_KOMF
 import snd.komelia.ui.platform.WindowSizeClass
 import snd.komelia.ui.platform.WindowSizeClass.FULL
 import snd.komelia.ui.platform.cursorForHand
+import snd.komelia.ui.requests.RequestsScreen
 import snd.komelia.ui.search.SearchScreen
 import snd.komelia.ui.series.seriesScreen
 import snd.komelia.ui.settings.MobileSettingsScreen
@@ -248,6 +250,15 @@ class MainScreen(
                         modifier = Modifier.weight(1f)
                     )
 
+                    // fork: pestaña de pedidos
+                    CompactNavButton(
+                        text = "Pedidos",
+                        icon = Icons.Default.AddCircle,
+                        onClick = { navigator.replaceAll(RequestsScreen()) },
+                        isSelected = navigator.lastItem is RequestsScreen,
+                        modifier = Modifier.weight(1f)
+                    )
+
                     CompactNavButton(
                         text = stringResource(Res.string.navbar_settings),
                         icon = Icons.Default.Settings,
@@ -315,7 +326,11 @@ class MainScreen(
                 if (width != FULL) coroutineScope.launch { vm.navBarState.snapTo(Closed) }
             },
             onSettingsClick = { navigator.parent!!.push(SettingsScreen()) },
-            taskQueueStatus = vm.komgaTaskQueueStatus.collectAsState().value
+            taskQueueStatus = vm.komgaTaskQueueStatus.collectAsState().value,
+            onRequestsClick = {
+                navigator.replaceAll(RequestsScreen())
+                if (width != FULL) coroutineScope.launch { vm.navBarState.snapTo(Closed) }
+            },
         )
     }
 

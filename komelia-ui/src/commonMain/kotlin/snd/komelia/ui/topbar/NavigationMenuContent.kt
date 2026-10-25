@@ -28,6 +28,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.LibraryBooks
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
@@ -82,6 +83,7 @@ fun NavBarContent(
     onLibraryClick: (KomgaLibraryId) -> Unit,
     onSettingsClick: () -> Unit,
     taskQueueStatus: TaskQueueStatus?,
+    onRequestsClick: (() -> Unit)? = null,  // fork: pestaña de pedidos
 ) {
     Surface(Modifier.width(230.dp)) {
         NavMenu(
@@ -91,7 +93,8 @@ fun NavBarContent(
             onHomeClick = onHomeClick,
             onLibrariesClick = onLibrariesClick,
             onLibraryClick = onLibraryClick,
-            onSettingsClick = onSettingsClick
+            onSettingsClick = onSettingsClick,
+            onRequestsClick = onRequestsClick,
         )
         if (taskQueueStatus != null && taskQueueStatus.count > 0) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
@@ -206,6 +209,7 @@ private fun NavMenu(
     onLibrariesClick: () -> Unit,
     onLibraryClick: (KomgaLibraryId) -> Unit,
     onSettingsClick: () -> Unit,
+    onRequestsClick: (() -> Unit)? = null,
 ) {
     val scrollState: ScrollState = rememberScrollState()
     val navBarInteractionSource = remember { MutableInteractionSource() }
@@ -241,6 +245,14 @@ private fun NavMenu(
             )
 
             HorizontalDivider(Modifier.padding(0.dp, 20.dp))
+            if (onRequestsClick != null) {
+                NavButton(
+                    onClick = onRequestsClick,
+                    icon = Icons.Default.AddCircle,
+                    label = "Pedidos",
+                    isSelected = currentScreen is snd.komelia.ui.requests.RequestsScreen
+                )
+            }
             NavButton(
                 onClick = onSettingsClick,
                 icon = Icons.Default.Settings,
