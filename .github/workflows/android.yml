@@ -63,9 +63,19 @@ jobs:
 
       - name: Compilar APK
         run: |
+          set -o pipefail
           ./gradlew android-aarch64_copyJniLibs
           ./gradlew buildEpubReaders
-          ./gradlew :androidDebug
+          ./gradlew :androidDebug 2>&1 | tee gradle-build.log
+
+      # Los logs de Actions solo se ven con sesión iniciada; los avisos ("annotations") son
+      # públicos. Así los errores de compilación se pueden leer sin acceso a la cuenta.
+      - name: Publicar errores de compilación
+        if: failure()
+        run: |
+          grep -E '^e: |error:|What went wrong' -A2 gradle-build.log | head -40 | while IFS= read -r line; do
+            echo "::error::${line}"
+          done || true
 
       - uses: actions/upload-artifact@v4
         with:
