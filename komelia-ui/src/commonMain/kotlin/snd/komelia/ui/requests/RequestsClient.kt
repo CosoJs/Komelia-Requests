@@ -26,6 +26,8 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
+import io.github.snd_r.komelia.ui.komelia_ui.generated.resources.*
+import org.jetbrains.compose.resources.getString
 import snd.komelia.settings.CommonSettingsRepository
 import snd.komelia.settings.SecretsRepository
 
@@ -62,17 +64,17 @@ class RequestsClient(
     private suspend fun login(): String {
         val komgaUrl = settings.getServerUrl().first()
         val cookie = secrets.getCookie(komgaUrl)?.let { parseServerSetCookieHeader(it).value }
-            ?: throw RequestsException("No hay sesión de Komga guardada: cerrá sesión en Komelia y volvé a entrar con \"recordarme\".")
+            ?: throw RequestsException(getString(Res.string.requests_err_no_session))
         val response: JsonObject = try {
             http.post("${baseUrl()}/api/login") {
                 contentType(ContentType.Application.Json)
                 setBody(buildJsonObject { put("komga_remember_me", cookie) })
             }.body()
         } catch (e: ResponseException) {
-            throw RequestsException("El servidor de pedidos no aceptó tu sesión de Komga (${e.response.status.value}).")
+            throw RequestsException(getString(Res.string.requests_err_session_rejected, e.response.status.value))
         }
         return response["token"]?.jsonPrimitive?.content
-            ?: throw RequestsException("El servidor de pedidos no devolvió una sesión. ¿Está actualizado?")
+            ?: throw RequestsException(getString(Res.string.requests_err_no_token))
     }
 
     /** Hace la llamada con la sesión; si venció, vuelve a entrar una vez. */
@@ -88,11 +90,11 @@ class RequestsClient(
                     val msg = runCatching {
                         json.decodeFromString<JsonObject>(e.response.bodyAsText())["error"]?.jsonPrimitive?.content
                     }.getOrNull()
-                    throw RequestsException(msg ?: "Error del servidor de pedidos (${e.response.status.value})")
+                    throw RequestsException(msg ?: getString(Res.string.requests_err_server, e.response.status.value))
                 }
             }
         }
-        throw RequestsException("No se pudo iniciar sesión en el servidor de pedidos.")
+        throw RequestsException(getString(Res.string.requests_err_login))
     }
 
     suspend fun me(): RqMe = call { auth -> http.get("${baseUrl()}/api/me") { auth() }.body() }

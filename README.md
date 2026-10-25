@@ -37,7 +37,7 @@ Debug APKs (arm64) are built by GitHub Actions: open the latest successful
 All new code lives in `komelia-ui/src/commonMain/kotlin/snd/komelia/ui/requests/`. Upstream files touched
 (each change is marked with `// fork:`): `MainScreen.kt`, `topbar/NavigationMenuContent.kt`,
 `ViewModelFactory.kt`, `komelia-app/androidApp/build.gradle.kts`, the Android `app_name`, plus the CI workflow in
-`.github/workflows/`. The Requests tab UI is currently in Spanish.
+`.github/workflows/`. The Requests tab is translated to English and Spanish (it follows the device language).
 
 Komelia is licensed under the Apache License 2.0 and so is this fork; all credit for the app goes to
 [Snd-R](https://github.com/Snd-R) and the Komelia contributors.

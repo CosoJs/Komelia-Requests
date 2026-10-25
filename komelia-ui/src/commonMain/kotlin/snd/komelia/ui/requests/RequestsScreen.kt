@@ -62,9 +62,12 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import coil3.compose.AsyncImage
+import io.github.snd_r.komelia.ui.komelia_ui.generated.resources.*
+import org.jetbrains.compose.resources.stringResource
 import snd.komelia.ui.LocalViewModelFactory
 
-/** Pestaña "Pedidos": buscar en AniList, pedir y, si sos admin, aprobar y elegir release. */
+/** Pestaña "Pedidos": buscar en AniList, pedir y, si sos admin, aprobar y elegir release.
+ *  Textos en composeResources (values = inglés, values-es = español). */
 class RequestsScreen : Screen {
     @Composable
     override fun Content() {
@@ -75,10 +78,23 @@ class RequestsScreen : Screen {
     }
 }
 
-private val KIND_LABEL = mapOf("manga" to "Manga", "novel" to "Novela ligera")
-private val STATUS_LABEL = mapOf(
-    "pending" to "Pendiente", "approved" to "Aprobado", "grabbed" to "Descargando", "denied" to "Rechazado"
-)
+private val KINDS = listOf("manga", "novel")
+
+@Composable
+private fun kindLabel(kind: String) = when (kind) {
+    "manga" -> stringResource(Res.string.requests_kind_manga)
+    "novel" -> stringResource(Res.string.requests_kind_novel)
+    else -> kind
+}
+
+@Composable
+private fun statusLabel(status: String) = when (status) {
+    "pending" -> stringResource(Res.string.requests_status_pending)
+    "approved" -> stringResource(Res.string.requests_status_approved)
+    "grabbed" -> stringResource(Res.string.requests_status_grabbed)
+    "denied" -> stringResource(Res.string.requests_status_denied)
+    else -> status
+}
 
 @Composable
 private fun RequestsContent(vm: RequestsViewModel) {
@@ -89,9 +105,9 @@ private fun RequestsContent(vm: RequestsViewModel) {
     Column(Modifier.fillMaxSize()) {
         PrimaryTabRow(selectedTabIndex = tab.ordinal) {
             Tab(selected = tab == RequestsTab.DISCOVER, onClick = { vm.tab.value = RequestsTab.DISCOVER },
-                text = { Text("Descubrir") })
+                text = { Text(stringResource(Res.string.requests_discover)) })
             Tab(selected = tab == RequestsTab.REQUESTS, onClick = { vm.tab.value = RequestsTab.REQUESTS },
-                text = { Text("Pedidos") })
+                text = { Text(stringResource(Res.string.requests_tab)) })
         }
         if (loading) LinearProgressIndicator(Modifier.fillMaxWidth()) else Spacer(Modifier.height(4.dp))
 
@@ -116,7 +132,7 @@ private fun MessageBanner(text: String, onClose: () -> Unit) {
     ) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = 12.dp)) {
             Text(text, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
-            IconButton(onClick = onClose) { Icon(Icons.Default.Close, contentDescription = "Cerrar") }
+            IconButton(onClick = onClose) { Icon(Icons.Default.Close, contentDescription = stringResource(Res.string.requests_close)) }
         }
     }
 }
@@ -131,23 +147,23 @@ private fun DiscoverTab(vm: RequestsViewModel) {
 
     Column(Modifier.fillMaxSize().padding(horizontal = 8.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            KIND_LABEL.forEach { (value, label) ->
-                FilterChip(selected = kind == value, onClick = { vm.setKind(value) }, label = { Text(label) })
+            KINDS.forEach { value ->
+                FilterChip(selected = kind == value, onClick = { vm.setKind(value) }, label = { Text(kindLabel(value)) })
             }
         }
         OutlinedTextField(
             value = query,
             onValueChange = { vm.query.value = it },
-            placeholder = { Text("Buscar en AniList…") },
+            placeholder = { Text(stringResource(Res.string.requests_search_hint)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = { vm.search() }),
-            trailingIcon = { IconButton(onClick = vm::search) { Icon(Icons.Default.Search, contentDescription = "Buscar") } },
+            trailingIcon = { IconButton(onClick = vm::search) { Icon(Icons.Default.Search, contentDescription = stringResource(Res.string.requests_search_action)) } },
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(8.dp))
         if (items.isEmpty()) {
-            Text("Buscá un manga o una novela ligera para pedirla.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(Res.string.requests_discover_empty), color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         LazyVerticalGrid(
             columns = GridCells.Adaptive(110.dp),
@@ -161,7 +177,7 @@ private fun DiscoverTab(vm: RequestsViewModel) {
                     Column(Modifier.padding(6.dp)) {
                         Text(item.title ?: "", maxLines = 2, overflow = TextOverflow.Ellipsis,
                             style = MaterialTheme.typography.labelLarge)
-                        listOfNotNull(item.year?.toString(), item.volumes?.let { "$it vol." })
+                        listOfNotNull(item.year?.toString(), item.volumes?.let { stringResource(Res.string.requests_volumes_short, it) })
                             .takeIf { it.isNotEmpty() }
                             ?.let { Text(it.joinToString(" · "), style = MaterialTheme.typography.labelSmall) }
                         StatusBadge(item.requestStatus, item.available)
@@ -184,8 +200,8 @@ private fun DetailDialog(vm: RequestsViewModel, item: RqItem) {
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     Cover(item.cover, Modifier.width(90.dp).aspectRatio(2f / 3f))
                     Column {
-                        Text(listOfNotNull(KIND_LABEL[item.kind], item.year?.toString(),
-                            item.volumes?.let { "$it volúmenes" }, item.status).joinToString(" · "),
+                        Text(listOfNotNull(kindLabel(item.kind), item.year?.toString(),
+                            item.volumes?.let { stringResource(Res.string.requests_volumes, it) }, item.status).joinToString(" · "),
                             style = MaterialTheme.typography.labelMedium)
                         StatusBadge(item.requestStatus, item.available)
                     }
@@ -197,13 +213,17 @@ private fun DetailDialog(vm: RequestsViewModel, item: RqItem) {
         confirmButton = {
             when {
                 item.requestStatus != null -> {}
-                complete -> Text("Ya está completa en la biblioteca.")
+                complete -> Text(stringResource(Res.string.requests_already_complete))
                 else -> Button(enabled = !requesting, onClick = { vm.request(item) }) {
-                    Text(if (requesting) "Pidiendo…" else if (item.available != null) "Pedir lo que falta" else "Pedir")
+                    Text(
+                        if (requesting) stringResource(Res.string.requests_requesting)
+                        else if (item.available != null) stringResource(Res.string.requests_request_missing)
+                        else stringResource(Res.string.requests_request)
+                    )
                 }
             }
         },
-        dismissButton = { TextButton(onClick = { vm.selected.value = null }) { Text("Cerrar") } }
+        dismissButton = { TextButton(onClick = { vm.selected.value = null }) { Text(stringResource(Res.string.requests_close)) } }
     )
 }
 
@@ -217,8 +237,8 @@ private fun RequestsTab(vm: RequestsViewModel) {
 
     Column(Modifier.fillMaxSize()) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 8.dp)) {
-            Text("${requests.size} pedidos", Modifier.weight(1f), style = MaterialTheme.typography.labelLarge)
-            IconButton(onClick = vm::loadRequests) { Icon(Icons.Default.Refresh, contentDescription = "Actualizar") }
+            Text(stringResource(Res.string.requests_count, requests.size), Modifier.weight(1f), style = MaterialTheme.typography.labelLarge)
+            IconButton(onClick = vm::loadRequests) { Icon(Icons.Default.Refresh, contentDescription = stringResource(Res.string.requests_refresh)) }
         }
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -241,31 +261,31 @@ private fun RequestCard(vm: RequestsViewModel, r: RqRequest, me: RqMe?) {
             Column(Modifier.weight(1f)) {
                 Text(r.title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyLarge)
                 StatusBadge(r.status, r.available)
-                Text("${KIND_LABEL[r.kind] ?: r.kind} · pedido por ${r.requestedBy}", style = MaterialTheme.typography.labelSmall)
+                Text(stringResource(Res.string.requests_requested_by, kindLabel(r.kind), r.requestedBy), style = MaterialTheme.typography.labelSmall)
                 r.releaseTitle?.let {
-                    Text("Release: $it (${r.releaseIndexer ?: "?"})", style = MaterialTheme.typography.labelSmall,
+                    Text(stringResource(Res.string.requests_release, it, r.releaseIndexer ?: "?"), style = MaterialTheme.typography.labelSmall,
                         maxLines = 2, overflow = TextOverflow.Ellipsis)
                 }
                 if (r.releasing == 1) {
-                    Text("📡 En seguimiento: se buscan volúmenes nuevos cada día.", style = MaterialTheme.typography.labelSmall)
+                    Text(stringResource(Res.string.requests_following), style = MaterialTheme.typography.labelSmall)
                 }
                 r.note?.let { Text(it, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.tertiary) }
                 Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     if (admin && r.status == "pending") {
-                        Button(onClick = { vm.action(r, "approve") }) { Text("Aprobar") }
-                        OutlinedButton(onClick = { vm.action(r, "deny") }) { Text("Rechazar") }
+                        Button(onClick = { vm.action(r, "approve") }) { Text(stringResource(Res.string.requests_approve)) }
+                        OutlinedButton(onClick = { vm.action(r, "deny") }) { Text(stringResource(Res.string.requests_deny)) }
                     }
                     if (chooser && r.status != "denied") {
-                        OutlinedButton(onClick = { vm.searchReleases(r) }) { Text("Buscar release") }
+                        OutlinedButton(onClick = { vm.searchReleases(r) }) { Text(stringResource(Res.string.requests_find_release)) }
                     }
                     if (admin && r.status != "denied") {
                         OutlinedButton(onClick = { vm.action(r, "follow") }) {
-                            Text(if (r.releasing == 1) "Dejar de seguir" else "Seguir nuevos")
+                            Text(if (r.releasing == 1) stringResource(Res.string.requests_unfollow) else stringResource(Res.string.requests_follow))
                         }
                     }
                     if (admin || (owner && r.status == "pending")) {
                         TextButton(onClick = { vm.action(r, "delete") }) {
-                            Text("Borrar", color = MaterialTheme.colorScheme.error)
+                            Text(stringResource(Res.string.requests_delete), color = MaterialTheme.colorScheme.error)
                         }
                     }
                 }
@@ -278,7 +298,7 @@ private fun RequestCard(vm: RequestsViewModel, r: RqRequest, me: RqMe?) {
 private fun ReleasesDialog(vm: RequestsViewModel, search: ReleaseSearch) {
     AlertDialog(
         onDismissRequest = { vm.releaseSearch.value = null },
-        title = { Text("Releases: ${search.request.title}") },
+        title = { Text(stringResource(Res.string.requests_releases_title, search.request.title)) },
         text = {
             val result = search.result
             if (search.loading || result == null) {
@@ -286,15 +306,15 @@ private fun ReleasesDialog(vm: RequestsViewModel, search: ReleaseSearch) {
             } else {
                 Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     if (result.have > 0) {
-                        Text("Ya tenés ${result.have} en Komga. \"nuevos\" = trae solo lo que falta.",
+                        Text(stringResource(Res.string.requests_have_in_komga, result.have),
                             style = MaterialTheme.typography.labelMedium)
                     }
-                    if (result.results.isEmpty()) Text("Sin resultados.")
+                    if (result.results.isEmpty()) Text(stringResource(Res.string.requests_no_results))
                     result.results.take(50).forEach { rel -> ReleaseRow(rel) { vm.grab(search.request, rel) } }
                 }
             }
         },
-        confirmButton = { TextButton(onClick = { vm.releaseSearch.value = null }) { Text("Cerrar") } }
+        confirmButton = { TextButton(onClick = { vm.releaseSearch.value = null }) { Text(stringResource(Res.string.requests_close)) } }
     )
 }
 
@@ -304,22 +324,22 @@ private fun ReleaseRow(rel: RqRelease, onGrab: () -> Unit) {
     Column(Modifier.alpha(if (dim) 0.5f else 1f)) {
         Text(rel.title, style = MaterialTheme.typography.bodySmall, maxLines = 3, overflow = TextOverflow.Ellipsis)
         val vols = when {
-            rel.volFrom == null -> "vol. ?"
-            rel.volFrom == rel.volTo -> "vol. ${rel.volFrom}"
-            else -> "vol. ${rel.volFrom}–${rel.volTo}"
+            rel.volFrom == null -> stringResource(Res.string.requests_vol_unknown)
+            rel.volFrom == rel.volTo -> stringResource(Res.string.requests_vol_single, rel.volFrom)
+            else -> stringResource(Res.string.requests_vol_range, rel.volFrom, rel.volTo ?: "?")
         }
         val langs = rel.languages.ifEmpty { listOf("?") }.joinToString(", ")
         Text("${rel.indexer ?: "?"} · $vols · $langs · ${size(rel.size)} · ${rel.seeders ?: "?"}/${rel.leechers ?: "?"}",
             style = MaterialTheme.typography.labelSmall)
         Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
             when {
-                rel.onlyNew -> Badge("nuevos", MaterialTheme.colorScheme.primaryContainer)
-                rel.new -> Badge("incluye nuevos", MaterialTheme.colorScheme.secondaryContainer)
+                rel.onlyNew -> Badge(stringResource(Res.string.requests_badge_new), MaterialTheme.colorScheme.primaryContainer)
+                rel.new -> Badge(stringResource(Res.string.requests_badge_includes_new), MaterialTheme.colorScheme.secondaryContainer)
             }
-            if (rel.complete) Badge("completo", MaterialTheme.colorScheme.primaryContainer)
-            if (!rel.match) Text("no coincide con el título", style = MaterialTheme.typography.labelSmall)
+            if (rel.complete) Badge(stringResource(Res.string.requests_badge_complete), MaterialTheme.colorScheme.primaryContainer)
+            if (!rel.match) Text(stringResource(Res.string.requests_no_title_match), style = MaterialTheme.typography.labelSmall)
             Spacer(Modifier.weight(1f))
-            Button(onClick = onGrab) { Text("Descargar") }
+            Button(onClick = onGrab) { Text(stringResource(Res.string.requests_download)) }
         }
     }
 }
@@ -333,15 +353,15 @@ private fun StatusBadge(status: String?, available: RqAvailability?) {
     when {
         showAvailability && available != null -> Badge(
             when {
-                available.complete -> "Disponible"
-                available.volumes != null -> "Parcial ${available.books}/${available.volumes}"
-                else -> "En biblioteca · ${available.books}"
+                available.complete -> stringResource(Res.string.requests_available)
+                available.volumes != null -> stringResource(Res.string.requests_partial, available.books, available.volumes)
+                else -> stringResource(Res.string.requests_in_library, available.books)
             },
             if (available.complete) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer
         )
 
-        status != null -> Badge(STATUS_LABEL[status] ?: status, MaterialTheme.colorScheme.surfaceVariant)
-        available != null -> Badge("En biblioteca · ${available.books}", MaterialTheme.colorScheme.secondaryContainer)
+        status != null -> Badge(statusLabel(status), MaterialTheme.colorScheme.surfaceVariant)
+        available != null -> Badge(stringResource(Res.string.requests_in_library, available.books), MaterialTheme.colorScheme.secondaryContainer)
     }
 }
 

@@ -51,6 +51,7 @@ import cafe.adriel.voyager.navigator.CurrentScreen
 import cafe.adriel.voyager.navigator.Navigator
 import io.github.snd_r.komelia.ui.komelia_ui.generated.resources.Res
 import io.github.snd_r.komelia.ui.komelia_ui.generated.resources.navbar_home
+import io.github.snd_r.komelia.ui.komelia_ui.generated.resources.requests_tab
 import io.github.snd_r.komelia.ui.komelia_ui.generated.resources.navbar_libraries
 import io.github.snd_r.komelia.ui.komelia_ui.generated.resources.navbar_search
 import io.github.snd_r.komelia.ui.komelia_ui.generated.resources.navbar_settings
@@ -252,7 +253,7 @@ class MainScreen(
 
                     // fork: pestaña de pedidos
                     CompactNavButton(
-                        text = "Pedidos",
+                        text = stringResource(Res.string.requests_tab),
                         icon = Icons.Default.AddCircle,
                         onClick = { navigator.replaceAll(RequestsScreen()) },
                         isSelected = navigator.lastItem is RequestsScreen,

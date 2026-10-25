@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import io.github.snd_r.komelia.ui.komelia_ui.generated.resources.Res
 import io.github.snd_r.komelia.ui.komelia_ui.generated.resources.navbar_home
+import io.github.snd_r.komelia.ui.komelia_ui.generated.resources.requests_tab
 import io.github.snd_r.komelia.ui.komelia_ui.generated.resources.navbar_libraries
 import io.github.snd_r.komelia.ui.komelia_ui.generated.resources.navbar_libraries_unavailable
 import io.github.snd_r.komelia.ui.komelia_ui.generated.resources.navbar_settings
@@ -249,7 +250,7 @@ private fun NavMenu(
                 NavButton(
                     onClick = onRequestsClick,
                     icon = Icons.Default.AddCircle,
-                    label = "Pedidos",
+                    label = stringResource(Res.string.requests_tab),
                     isSelected = currentScreen is snd.komelia.ui.requests.RequestsScreen
                 )
             }

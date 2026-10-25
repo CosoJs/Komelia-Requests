@@ -1,3 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- fork: pestaña de pedidos (Komelia Requests) -->
+    <string name="requests_tab">Pedidos</string>
+    <string name="requests_discover">Descubrir</string>
+    <string name="requests_kind_manga">Manga</string>
+    <string name="requests_kind_novel">Novela ligera</string>
+    <string name="requests_search_hint">Buscar en AniList…</string>
+    <string name="requests_search_action">Buscar</string>
+    <string name="requests_discover_empty">Busca un manga o una novela ligera para pedirla.</string>
+    <string name="requests_volumes_short">%1$s vol.</string>
+    <string name="requests_volumes">%1$s volúmenes</string>
+    <string name="requests_request">Pedir</string>
+    <string name="requests_request_missing">Pedir lo que falta</string>
+    <string name="requests_requesting">Pidiendo…</string>
+    <string name="requests_already_complete">Ya está completa en la biblioteca.</string>
+    <string name="requests_close">Cerrar</string>
+    <string name="requests_count">%1$s pedidos</string>
+    <string name="requests_refresh">Actualizar</string>
+    <string name="requests_requested_by">%1$s · pedido por %2$s</string>
+    <string name="requests_release">Release: %1$s (%2$s)</string>
+    <string name="requests_following">📡 En seguimiento: se buscan volúmenes nuevos cada día.</string>
+    <string name="requests_approve">Aprobar</string>
+    <string name="requests_deny">Rechazar</string>
+    <string name="requests_find_release">Buscar release</string>
+    <string name="requests_follow">Seguir nuevos</string>
+    <string name="requests_unfollow">Dejar de seguir</string>
+    <string name="requests_delete">Borrar</string>
+    <string name="requests_releases_title">Releases: %1$s</string>
+    <string name="requests_have_in_komga">Ya tienes %1$s en Komga. “nuevos” = trae solo lo que falta.</string>
+    <string name="requests_no_results">Sin resultados.</string>
+    <string name="requests_download">Descargar</string>
+    <string name="requests_badge_new">nuevos</string>
+    <string name="requests_badge_includes_new">incluye nuevos</string>
+    <string name="requests_badge_complete">completo</string>
+    <string name="requests_no_title_match">no coincide con el título</string>
+    <string name="requests_status_pending">Pendiente</string>
+    <string name="requests_status_approved">Aprobado</string>
+    <string name="requests_status_grabbed">Descargando</string>
+    <string name="requests_status_denied">Rechazado</string>
+    <string name="requests_available">Disponible</string>
+    <string name="requests_partial">Parcial %1$s/%2$s</string>
+    <string name="requests_in_library">En biblioteca · %1$s</string>
+    <string name="requests_vol_unknown">vol. ?</string>
+    <string name="requests_vol_single">vol. %1$s</string>
+    <string name="requests_vol_range">vol. %1$s–%2$s</string>
+    <string name="requests_msg_approved">✔ Pedido aprobado: buscando release…</string>
+    <string name="requests_msg_pending">✔ Pedido enviado: queda esperando aprobación.</string>
+    <string name="requests_msg_sent_to_client">Enviado a qBittorrent.</string>
+    <string name="requests_err_connect">No se pudo conectar con el servidor de pedidos: %1$s</string>
+    <string name="requests_err_no_session">No hay sesión de Komga guardada: cierra sesión en Komelia y vuelve a entrar con “recordarme”.</string>
+    <string name="requests_err_session_rejected">El servidor de pedidos no aceptó tu sesión de Komga (%1$s).</string>
+    <string name="requests_err_no_token">El servidor de pedidos no devolvió una sesión. ¿Está actualizado?</string>
+    <string name="requests_err_server">Error del servidor de pedidos (%1$s)</string>
+    <string name="requests_err_login">No se pudo iniciar sesión en el servidor de pedidos.</string>
+    <string name="requests_err_request">No se pudo pedir</string>
+    <string name="requests_err_search">No se pudo buscar</string>
 </resources>

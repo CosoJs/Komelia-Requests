@@ -6,6 +6,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import io.github.snd_r.komelia.ui.komelia_ui.generated.resources.*
+import org.jetbrains.compose.resources.getString
 
 enum class RequestsTab { DISCOVER, REQUESTS }
 
@@ -49,7 +51,7 @@ class RequestsViewModel(private val client: RequestsClient) : ScreenModel {
             } catch (e: RequestsException) {
                 message.value = e.message
             } catch (e: Exception) {
-                message.value = "No se pudo conectar con el servidor de pedidos: ${e.message}"
+                message.value = getString(Res.string.requests_err_connect, e.message ?: "")
             } finally {
                 _loading.value = false
             }
@@ -76,11 +78,11 @@ class RequestsViewModel(private val client: RequestsClient) : ScreenModel {
                 _items.value = _items.value.map {
                     if (it.anilistId == item.anilistId) it.copy(requestStatus = created.status) else it
                 }
-                message.value = if (created.status == "approved") "✔ Pedido aprobado: buscando release…"
-                else "✔ Pedido enviado: queda esperando aprobación."
+                message.value = if (created.status == "approved") getString(Res.string.requests_msg_approved)
+                else getString(Res.string.requests_msg_pending)
                 selected.value = null
             } catch (e: Exception) {
-                message.value = e.message ?: "No se pudo pedir"
+                message.value = e.message ?: getString(Res.string.requests_err_request)
             } finally {
                 requesting.value = false
             }
@@ -102,7 +104,7 @@ class RequestsViewModel(private val client: RequestsClient) : ScreenModel {
                 releaseSearch.value = ReleaseSearch(request, loading = false, result = client.searchReleases(request.id))
             } catch (e: Exception) {
                 releaseSearch.value = null
-                message.value = e.message ?: "No se pudo buscar"
+                message.value = e.message ?: getString(Res.string.requests_err_search)
             }
         }
     }
@@ -110,7 +112,7 @@ class RequestsViewModel(private val client: RequestsClient) : ScreenModel {
     fun grab(request: RqRequest, release: RqRelease) = launchLoading {
         client.grab(request.id, release.guid)
         releaseSearch.value = null
-        message.value = "Enviado a qBittorrent."
+        message.value = getString(Res.string.requests_msg_sent_to_client)
         _requests.value = client.requests()
     }
 }
